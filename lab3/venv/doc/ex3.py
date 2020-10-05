@@ -98,6 +98,8 @@ def man(color, x, y, w):
     pygame.draw.line(man, black, (int(52*w/100), int(21*h/100)), (int(54*w/100), int(21 * h / 100)))
     screen.blit(man, (x, y))
 
+
+#pictures
 cat(90, 550, 150, gray, fish)
 cat(0, 730, 120, gray, fish)
 cat(40, 590, 130, gray, fish)
