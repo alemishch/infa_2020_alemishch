@@ -2,3 +2,4 @@ Table of results:
 
 Chukinson   123
 alex   85
+alex   32

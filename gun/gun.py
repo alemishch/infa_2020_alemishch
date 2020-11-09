@@ -2,7 +2,6 @@ from random import randrange as rnd, choice
 import tkinter as tk
 import math
 import time
-
 # print (dir(math))
 
 root = tk.Tk()
@@ -12,6 +11,18 @@ canv = tk.Canvas(root, bg='white')
 canv.pack(fill=tk.BOTH, expand=1)
 
 
+def playGif(file, b):
+    label = tk.Label(canv, image=tk.PhotoImage(file = file))
+    frames = []
+    i = 1
+    n = 5
+    while i < n:
+        label.place(relx=b.x/800, rely=b.y/600)
+        time.sleep(0.7 / n)
+        frames.append(tk.PhotoImage(file=file, format=("gif -index {}".format(i))))
+        label.configure(image = frames[i-1])
+        i += 1
+    label.forget()
 class ball():
     def __init__(self, x=40, y=450):
         """ Конструктор класса ball
@@ -57,7 +68,7 @@ class ball():
             self.vx *= -1
         if self.y + self.r >= 600:
             self.vy *= -0.8
-        self.vy -= 1.5
+        self.vy -= 1.2
 
     def hittest(self, obj):
         """Функция проверяет сталкивалкивается ли данный обьект с целью, описываемой в обьекте obj.
@@ -79,7 +90,7 @@ class gun():
         self.f2_power = 10
         self.f2_on = 0
         self.an = 1
-        self.id = canv.create_line(20, 450, 50, 420, width=7)  # FIXME: don't know how to set it...
+        self.id = canv.create_line(20, 450, 50, 420, width=7)
 
     def fire2_start(self, event):
         self.f2_on = 1
@@ -95,8 +106,8 @@ class gun():
         new_ball = ball()
         new_ball.r += 5
         self.an = math.atan((event.y - new_ball.y) / (event.x - new_ball.x))
-        new_ball.vx = self.f2_power * math.cos(self.an)
-        new_ball.vy = - self.f2_power * math.sin(self.an)
+        new_ball.vx = self.f2_power * math.cos(self.an)/1.4
+        new_ball.vy = - self.f2_power * math.sin(self.an)/1.4
         balls += [new_ball]
         self.f2_on = 0
         self.f2_power = 10
@@ -133,8 +144,8 @@ class target():
 
     def new_target(self):
         """ Инициализация новой цели. """
-        x = self.x = rnd(600, 780)
-        y = self.y = rnd(300, 550)
+        x = self.x = rnd(200, 780)
+        y = self.y = rnd(50, 550)
         r = self.r = rnd(2, 50)
         color = self.color = 'red'
         canv.coords(self.id, x - r, y - r, x + r, y + r)
@@ -147,40 +158,51 @@ class target():
         canv.itemconfig(self.id_points, text=self.points)
 
 
-t1 = target()
-screen1 = canv.create_text(400, 300, text='aa', font='28')
+screen1 = canv.create_text(400, 300, text='', font='28')
 g1 = gun()
 bullet = 0
 balls = []
 
-
 def new_game(event=''):
-    global gun, t1, screen1, balls, bullet
-    t1.new_target()
+    global gun, screen1, balls, bullet
+    enemies = 1
     bullet = 0
     balls = []
+    targets = []
     canv.bind('<Button-1>', g1.fire2_start)
     canv.bind('<ButtonRelease-1>', g1.fire2_end)
     canv.bind('<Motion>', g1.targetting)
-    canv.itemconfig(screen1, text='')
+    for i in range(1, 5):
+        targets.append(target())
+    for t in targets:
+        t.new_target()
+        t.live = 1
     z = 0.03
-    t1.live = 1
-    while t1.live:
+    while enemies == 1:
         for b in balls:
-            b.move()
-            b.set_coords()
-            if b.hittest(t1) and t1.live:
-                t1.live = 0
-                t1.hit()
-                #canv.delete(b)
-                canv.itemconfig(screen1, text='Вы уничтожили цель за ' + str(bullet) + ' выстрелов')
+            enemies = 0
+            for t in targets:
+                b.move()
+                b.set_coords()
+                if b.hittest(t) and t.live:
+                    #playGif("gun/gif_explosion.gif", b)
+                    canv.delete(b.id)
+                    t.live = 0
+                    canv.delete(t.id)
+                    t.hit()
+                if(t.live):
+                    enemies = 1
         canv.update()
         time.sleep(z)
         g1.targetting()
         g1.power_up()
-    #canv.delete(gun)
-    root.after(2000, new_game)
+    canv.itemconfig(screen1, text='Вы уничтожили все цели за ' + str(bullet) + ' выстрелов')
+    canv.delete(gun)
+    for t in targets:
+        canv.delete(t.id)
+    root.after(1000, new_game)
 
 
 new_game()
 
+tk.mainloop()

@@ -21,25 +21,21 @@ mann = (254, 205, 148)
 
 pygame.draw.rect(screen, white, (0, 0, 600, 900))
 pygame.draw.rect(screen, whitt, (0, 0, 600, 400))
-
+#цвет кота коричневый, больше рядов льда(4), ТЕНИ ОТ КОТОВ И ИГЛУ
 
 #drawing iglu
 #x, y - coordinates of top left corner, r - radius
 def iglu(x, y, r):
-    iglu=pygame.Surface((2*r, r), pygame.SRCALPHA, 32)
+    iglu=pygame.Surface((2*r, 1*r), pygame.SRCALPHA, 32)
     iglu=iglu.convert_alpha()
+    pygame.draw.ellipse(screen, black, (x, y+int(0.9*r), 2*r, int(0.2*r)))
     pygame.draw.circle(iglu, gray, (r, r), r)
     pygame.draw.arc(iglu, black, (0, 0, 2*r, 2*r), 0, pi, 3)
     pygame.draw.line(iglu, black, (0, r-2), (2*r, r-2), 2)
-    pygame.draw.line(iglu, black, (r-r/(srt2), r/(2*srt2)), (r+r/(srt2), r/(2*srt2)), 2)
-    pygame.draw.line(iglu, black, (r-r/(0.77*srt2), r/(srt2)), (r+r/(0.77*srt2), r/(srt2)), 2)
-    yy = [r, r/srt2, r/(2*srt2)]
-    pygame.draw.line(iglu, black, (r, 0), (r, yy[2]))
-    for i in range(1, 3):
-        delta = random.randint(int(-r/7), int(r/7))
-        xx = range(int(r/2), 4*int((r**2-yy[i]**2)**0.5), int(r/3))
-        for j in range(0, len(xx)):
-            pygame.draw.line(iglu, black, (xx[j]+delta, yy[i]), (xx[j]+delta, yy[i-1]))
+    pygame.draw.line(iglu, black, (int(r-r*0.97), int(3*r/4)), (int(r+r*0.97), int(3*r/4)), 2)
+    pygame.draw.line(iglu, black, (int(r-r*0.85), int(2*r/4)), (int(r+r*0.85), int(2*r/4)), 2)
+    pygame.draw.line(iglu, black, (int(r-r*0.67), int(r/4)), (int(r+r*0.67), int(1*r/4)), 2) 
+    
     screen.blit(iglu, (x, y))
     
 
@@ -54,6 +50,7 @@ def cat(x, y, w, color, fish):
     h = int(w / 3)
     cat=pygame.Surface((w, h+30), pygame.SRCALPHA, 32)
     cat = cat.convert_alpha()
+    pygame.draw.ellipse(cat, black, (0, int(1.0*h), w, int(0.3*h)))
     ellipse(cat, int(w/7), int(h/2), int(w/1.5), int(h/2), color, 0)
     ellipse(cat, int(5*w/7), int(h/4), int(w/4), int(h/5), color, 30)
     ellipse(cat, int(4*w/7), int(h/2), int(w/3), int(h/5), color, -45)
@@ -100,10 +97,10 @@ def man(color, x, y, w):
 
 
 #pictures
-cat(90, 550, 150, gray, fish)
-cat(0, 730, 120, gray, fish)
-cat(40, 590, 130, gray, fish)
-cat(160, 690, 110, gray, fish)
+cat(90, 550, 150, brown, fish)
+cat(0, 730, 120, brown, fish)
+cat(40, 590, 130, brown, fish)
+cat(160, 690, 110, brown, fish)
 iglu(140, 300, 120)
 iglu(40, 350, 80)
 iglu(00, 420, 30)
