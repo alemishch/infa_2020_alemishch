@@ -26,6 +26,7 @@ canv.create_line(0, H-45, W, H-45)
 
 
 def playGif(file, b):
+    """Проигрывает gif-файл"""
     label = tk.Label(canv, image=tk.PhotoImage(file=file))
     frames = []
     i = 1
@@ -40,6 +41,7 @@ def playGif(file, b):
 
 
 class Bomb:
+    '''Бомба, появляется для каждого шара спустя определённый промежуток времени'''
     def __init__(self, x, y, angle):
         self.r = 4
         self.y = y
@@ -50,6 +52,7 @@ class Bomb:
         self.bomb = canv.create_oval(self.x - self.r, self.y + self.r, self.x + self.r, self.y - self.r, fill="yellow")
 
     def move(self, guns, arr):
+        """Guns - массив пушек, arr-массив бомб"""
         self.x += self.vx
         self.y += self.vy
         canv.coords(self.bomb, self.x - self.r, self.y + self.r, self.x + self.r, self.y - self.r)
@@ -131,12 +134,14 @@ class ball():
             return False
 
     def destroy(self):
+        '''Убирает мяч из списка и удаляет модель'''
         canv.coords(self.id, -10, -10, -10, 10)
         self.vx, self.vy = 0, 0
         canv.delete(self.id)
 
 
 class gun():
+    '''Пушка'''
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -151,8 +156,6 @@ class gun():
         self.an = 1
         self.id = canv.create_line(self.ots, self.y, self.ots + 20, self.y, width=4)
 
-    def switch_weapon(self, event):
-        self.weapon_type += 1
 
     def move(self):
         canv.coords(self.id, self.x+20, self.y, self.x+20 + self.f2_power * math.cos(self.an), self.y +
@@ -234,6 +237,7 @@ class gun():
 
 
 class target():
+    """Цель, бывает двух типов в зависимости от вида движения"""
     def __init__(self):
         self.period = rnd(10, 30, 1)
         self.age = 0
@@ -243,11 +247,17 @@ class target():
         self.new_target()
 
     def move(self, z):
+        if self.type:
+            self.vy += 3
         self.x += self.vx
         self.y += self.vy
-        if self.y + self.r >= H - dH or self.y - self.r <= 0:
+        if self.y + self.r > H - dH:
+            self.y = H-dH-self.r
             self.vy *= -1
-        if self.x - self.r <= dW or self.x + self.r >= W - dW:
+        if self.y - self.r < 0:
+            self.y = self.r
+            self.vy *= -1
+        if self.x - self.r < dW or self.x + self.r > W - dW:
             self.vx *= -1
         self.age += z
 
@@ -276,8 +286,7 @@ class target():
 
     def new_target(self):
         """ Инициализация новой цели. """
-        self.xcenter = rnd(200, 780)
-        self.ycenter = rnd(50, 550)
+        self.type = choice([1, 0])
         self.vx = rnd(-10, 10)
         self.vy = rnd(-10, 10)
         x = self.x = rnd(230, 700)
